@@ -1,0 +1,235 @@
+package controllers
+
+import (
+	"net/http"
+	"strconv"
+	"time"
+
+	Domain "ShopOps/Domain"
+	Usecases "ShopOps/Usecases"
+	"github.com/gin-gonic/gin"
+)
+
+type SalesController struct {
+	salesUC Usecases.SalesUseCase
+}
+
+func NewSalesController(salesUC Usecases.SalesUseCase) *SalesController {
+	return &SalesController{salesUC: salesUC}
+}
+
+// CreateSale records a new sale
+func (c *SalesController) CreateSale(ctx *gin.Context) {
+	businessID := ctx.Param("businessId")
+	if businessID == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Business ID is required"})
+		return
+	}
+
+	userID, exists := ctx.Get("userID")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+
+	var req Domain.CreateSaleRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	sale, err := c.salesUC.CreateSale(businessID, userID.(string), req)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, sale)
+}
+
+// GetSales lists all sales with filtering
+func (c *SalesController) GetSales(ctx *gin.Context) {
+	businessID := ctx.Param("businessId")
+	if businessID == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Business ID is required"})
+		return
+	}
+
+	// Parse filters
+	filters := Domain.SaleFilters{}
+
+	// Date filters
+	if startDateStr := ctx.Query("start_date"); startDateStr != "" {
+		if startDate, err := time.Parse("2006-01-02", startDateStr); err == nil {
+			filters.StartDate = &startDate
+		}
+	}
+
+	if endDateStr := ctx.Query("end_date"); endDateStr != "" {
+		if endDate, err := time.Parse("2006-01-02", endDateStr); err == nil {
+			filters.EndDate = &endDate
+		}
+	}
+
+	// Status filter
+	if status := ctx.Query("status"); status != "" {
+		saleStatus := Domain.SaleStatus(status)
+		filters.Status = &saleStatus
+	}
+
+	// Payment filters
+	if paymentMethod := ctx.Query("payment_method"); paymentMethod != "" {
+		pm := Domain.PaymentMethod(paymentMethod)
+		filters.PaymentMethod = &pm
+	}
+
+	if paymentStatus := ctx.Query("payment_status"); paymentStatus != "" {
+		ps := Domain.PaymentStatus(paymentStatus)
+		filters.PaymentStatus = &ps
+	}
+
+	// Pagination
+	if limitStr := ctx.Query("limit"); limitStr != "" {
+		if limit, err := strconv.Atoi(limitStr); err == nil && limit > 0 {
+			filters.Limit = limit
+		}
+	}
+
+	if offsetStr := ctx.Query("offset"); offsetStr != "" {
+		if offset, err := strconv.Atoi(offsetStr); err == nil && offset >= 0 {
+			filters.Offset = offset
+		}
+	}
+
+	sales, err := c.salesUC.GetSales(businessID, filters)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, sales)
+}
+
+// GetSale gets sale details
+func (c *SalesController) GetSale(ctx *gin.Context) {
+	businessID := ctx.Param("businessId")
+	if businessID == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Business ID is required"})
+		return
+	}
+
+	saleID := ctx.Param("saleId")
+	if saleID == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Sale ID is required"})
+		return
+	}
+
+	sale, err := c.salesUC.GetSaleByID(saleID, businessID)
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, sale)
+}
+
+// UpdateSale updates sale (before sync)
+func (c *SalesController) UpdateSale(ctx *gin.Context) {
+	businessID := ctx.Param("businessId")
+	if businessID == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Business ID is required"})
+		return
+	}
+
+	saleID := ctx.Param("saleId")
+	if saleID == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Sale ID is required"})
+		return
+	}
+
+	userID, exists := ctx.Get("userID")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+
+	var req Domain.CreateSaleRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	sale, err := c.salesUC.UpdateSale(saleID, businessID, userID.(string), req)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, sale)
+}
+
+// VoidSale voids a sale
+func (c *SalesController) VoidSale(ctx *gin.Context) {
+	businessID := ctx.Param("businessId")
+	if businessID == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Business ID is required"})
+		return
+	}
+
+	saleID := ctx.Param("saleId")
+	if saleID == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Sale ID is required"})
+		return
+	}
+
+	userID, exists := ctx.Get("userID")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+
+	if err := c.salesUC.VoidSale(saleID, businessID, userID.(string)); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Sale voided successfully"})
+}
+
+// GetSalesSummary gets sales summary
+func (c *SalesController) GetSalesSummary(ctx *gin.Context) {
+	businessID := ctx.Param("businessId")
+	if businessID == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Business ID is required"})
+		return
+	}
+
+	period := ctx.DefaultQuery("period", "month")
+
+	summary, err := c.salesUC.GetSalesSummary(businessID, period)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, summary)
+}
+
+// GetSalesStats gets sales statistics
+func (c *SalesController) GetSalesStats(ctx *gin.Context) {
+	businessID := ctx.Param("businessId")
+	if businessID == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Business ID is required"})
+		return
+	}
+
+	period := ctx.DefaultQuery("period", "month")
+
+	stats, err := c.salesUC.GetSalesStats(businessID, period)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, stats)
+}
