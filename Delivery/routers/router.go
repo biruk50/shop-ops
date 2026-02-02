@@ -6,12 +6,17 @@ import (
 	Repositories "ShopOps/Repositories"
 	Usecases "ShopOps/Usecases"
 
+	swaggerFiles "github.com/swaggo/files"
+    ginSwagger "github.com/swaggo/gin-swagger"
+	
+
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func SetupRouter(db *mongo.Database) *gin.Engine {
 	router := gin.Default()
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// CORS middleware
 	router.Use(func(c *gin.Context) {

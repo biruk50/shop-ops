@@ -6,8 +6,22 @@ import (
 
 	routers "ShopOps/Delivery/routers"
 	Infrastructure "ShopOps/Infrastructure"
+	_ "ShopOps/docs"
 )
 
+// @title           ShopOps Backend API
+// @version         1.0
+// @description     Backend system for shop operations management.
+// @termsOfService  http://swagger.io/terms/
+// @contact.name   API Support
+// @contact.email  support@shopops.com
+// @license.name   Apache 2.0
+// @license.url    http://www.apache.org/licenses/LICENSE-2.0.html
+// @host           localhost:8080
+// @BasePath       /api/v1
+// @securityDefinitions.apikey  BearerAuth
+// @in                          header
+// @name                        Authorization
 func main() {
 	// Initialize MongoDB
 	if err := Infrastructure.InitMongo(); err != nil {

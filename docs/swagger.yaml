@@ -1,0 +1,2492 @@
+basePath: /api/v1
+definitions:
+  Domain.AdjustStockRequest:
+    properties:
+      quantity:
+        type: number
+      reason:
+        type: string
+      type:
+        $ref: '#/definitions/Domain.MovementType'
+    required:
+    - quantity
+    - reason
+    - type
+    type: object
+  Domain.Business:
+    properties:
+      address:
+        type: string
+      business_type:
+        type: string
+      city:
+        type: string
+      country:
+        type: string
+      created_at:
+        type: string
+      currency:
+        type: string
+      description:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+      status:
+        $ref: '#/definitions/Domain.BusinessStatus'
+      timezone:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    required:
+    - business_type
+    - currency
+    - name
+    type: object
+  Domain.BusinessStatus:
+    enum:
+    - active
+    - inactive
+    - closed
+    type: string
+    x-enum-varnames:
+    - BusinessStatusActive
+    - BusinessStatusInactive
+    - BusinessStatusClosed
+  Domain.CategoryExpense:
+    properties:
+      category:
+        $ref: '#/definitions/Domain.ExpenseCategory'
+      count:
+        type: integer
+      percentage:
+        type: number
+      total_amount:
+        type: number
+    type: object
+  Domain.CreateBusinessRequest:
+    properties:
+      address:
+        type: string
+      business_type:
+        type: string
+      city:
+        type: string
+      country:
+        type: string
+      currency:
+        type: string
+      description:
+        type: string
+      email:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+      timezone:
+        type: string
+    required:
+    - business_type
+    - currency
+    - name
+    type: object
+  Domain.CreateExpenseRequest:
+    properties:
+      amount:
+        type: number
+      category:
+        $ref: '#/definitions/Domain.ExpenseCategory'
+      date:
+        type: string
+      description:
+        type: string
+      local_id:
+        description: For offline sync
+        type: string
+    required:
+    - amount
+    - category
+    type: object
+  Domain.CreateProductRequest:
+    properties:
+      barcode:
+        type: string
+      category:
+        type: string
+      cost_price:
+        type: number
+      description:
+        type: string
+      max_stock:
+        type: number
+      min_stock:
+        type: number
+      name:
+        type: string
+      selling_price:
+        type: number
+      sku:
+        type: string
+      stock:
+        minimum: 0
+        type: number
+      unit:
+        type: string
+    required:
+    - cost_price
+    - name
+    - selling_price
+    type: object
+  Domain.CreateSaleRequest:
+    properties:
+      customer_name:
+        type: string
+      customer_phone:
+        type: string
+      discount:
+        type: number
+      local_id:
+        description: For offline sync
+        type: string
+      notes:
+        type: string
+      payment_method:
+        $ref: '#/definitions/Domain.PaymentMethod'
+      product_id:
+        type: string
+      quantity:
+        type: number
+      tax:
+        type: number
+      unit_price:
+        type: number
+    required:
+    - payment_method
+    - quantity
+    - unit_price
+    type: object
+  Domain.DailyExpense:
+    properties:
+      amount:
+        type: number
+      count:
+        type: integer
+      date:
+        type: string
+    type: object
+  Domain.DailySales:
+    properties:
+      amount:
+        type: number
+      date:
+        type: string
+      sales:
+        type: number
+      transactions:
+        type: integer
+    type: object
+  Domain.DashboardData:
+    properties:
+      low_stock_count:
+        type: integer
+      month_expenses:
+        type: number
+      month_profit:
+        type: number
+      month_sales:
+        type: number
+      pending_payments:
+        type: number
+      today_expenses:
+        type: number
+      today_profit:
+        type: number
+      today_sales:
+        type: number
+      week_expenses:
+        type: number
+      week_profit:
+        type: number
+      week_sales:
+        type: number
+    type: object
+  Domain.Expense:
+    properties:
+      amount:
+        type: number
+      business_id:
+        type: string
+      category:
+        $ref: '#/definitions/Domain.ExpenseCategory'
+      created_at:
+        type: string
+      created_by:
+        type: string
+      date:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      local_id:
+        description: For offline sync
+        type: string
+      receipt_url:
+        type: string
+      status:
+        $ref: '#/definitions/Domain.ExpenseStatus'
+      synced:
+        type: boolean
+      synced_at:
+        type: string
+      updated_at:
+        type: string
+    required:
+    - amount
+    - category
+    type: object
+  Domain.ExpenseCategory:
+    enum:
+    - rent
+    - utilities
+    - stock_purchase
+    - transport
+    - salaries
+    - marketing
+    - maintenance
+    - other
+    type: string
+    x-enum-varnames:
+    - ExpenseCategoryRent
+    - ExpenseCategoryUtilities
+    - ExpenseCategoryStockPurchase
+    - ExpenseCategoryTransport
+    - ExpenseCategorySalaries
+    - ExpenseCategoryMarketing
+    - ExpenseCategoryMaintenance
+    - ExpenseCategoryOther
+  Domain.ExpenseStatus:
+    enum:
+    - active
+    - voided
+    - deleted
+    type: string
+    x-enum-varnames:
+    - ExpenseStatusActive
+    - ExpenseStatusVoided
+    - ExpenseStatusDeleted
+  Domain.ExpenseSummary:
+    properties:
+      category:
+        $ref: '#/definitions/Domain.ExpenseCategory'
+      count:
+        type: integer
+      percentage:
+        type: number
+      total_amount:
+        type: number
+    type: object
+  Domain.ExpensesReport:
+    properties:
+      category_breakdown:
+        items:
+          $ref: '#/definitions/Domain.CategoryExpense'
+        type: array
+      daily_expenses:
+        items:
+          $ref: '#/definitions/Domain.DailyExpense'
+        type: array
+      period:
+        type: string
+      total_expenses:
+        type: number
+    type: object
+  Domain.InventoryReport:
+    properties:
+      low_stock_items:
+        items:
+          $ref: '#/definitions/Domain.LowStockItem'
+        type: array
+      stock_movement:
+        items:
+          $ref: '#/definitions/Domain.StockMovement'
+        type: array
+      total_products:
+        type: integer
+      total_stock:
+        type: number
+      total_value:
+        type: number
+    type: object
+  Domain.LoginRequest:
+    properties:
+      password:
+        type: string
+      phone:
+        type: string
+    required:
+    - password
+    - phone
+    type: object
+  Domain.LoginResponse:
+    properties:
+      token:
+        type: string
+      user:
+        $ref: '#/definitions/Domain.User'
+    type: object
+  Domain.LowStockItem:
+    properties:
+      current:
+        type: number
+      difference:
+        type: number
+      minimum:
+        type: number
+      product_id:
+        type: string
+      product_name:
+        type: string
+    type: object
+  Domain.MovementType:
+    enum:
+    - purchase
+    - sale
+    - adjust
+    - damage
+    - theft
+    - return
+    type: string
+    x-enum-varnames:
+    - MovementTypePurchase
+    - MovementTypeSale
+    - MovementTypeAdjust
+    - MovementTypeDamage
+    - MovementTypeTheft
+    - MovementTypeReturn
+  Domain.PaymentMethod:
+    enum:
+    - cash
+    - card
+    - mobile
+    - bank
+    - credit
+    - other
+    type: string
+    x-enum-varnames:
+    - PaymentMethodCash
+    - PaymentMethodCard
+    - PaymentMethodMobile
+    - PaymentMethodBank
+    - PaymentMethodCredit
+    - PaymentMethodOther
+  Domain.PaymentStatus:
+    enum:
+    - paid
+    - pending
+    - failed
+    type: string
+    x-enum-varnames:
+    - PaymentStatusPaid
+    - PaymentStatusPending
+    - PaymentStatusFailed
+  Domain.Product:
+    properties:
+      barcode:
+        type: string
+      business_id:
+        type: string
+      category:
+        type: string
+      cost_price:
+        type: number
+      created_at:
+        type: string
+      created_by:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      image_url:
+        type: string
+      max_stock:
+        type: number
+      min_stock:
+        type: number
+      name:
+        type: string
+      selling_price:
+        type: number
+      sku:
+        type: string
+      status:
+        $ref: '#/definitions/Domain.ProductStatus'
+      stock:
+        minimum: 0
+        type: number
+      unit:
+        type: string
+      updated_at:
+        type: string
+    required:
+    - cost_price
+    - name
+    - selling_price
+    type: object
+  Domain.ProductStatus:
+    enum:
+    - active
+    - inactive
+    - discontinued
+    type: string
+    x-enum-varnames:
+    - ProductStatusActive
+    - ProductStatusInactive
+    - ProductStatusDiscontinued
+  Domain.ProfitReport:
+    properties:
+      gross_profit:
+        type: number
+      net_profit:
+        type: number
+      period:
+        type: string
+      profit_margin:
+        type: number
+      total_expenses:
+        type: number
+      total_sales:
+        type: number
+      trends:
+        items:
+          $ref: '#/definitions/Domain.ProfitTrend'
+        type: array
+    type: object
+  Domain.ProfitTrend:
+    properties:
+      expenses:
+        type: number
+      period:
+        type: string
+      profit:
+        type: number
+      sales:
+        type: number
+    type: object
+  Domain.RegisterRequest:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        minLength: 6
+        type: string
+      phone:
+        type: string
+    required:
+    - name
+    - password
+    - phone
+    type: object
+  Domain.Sale:
+    properties:
+      business_id:
+        type: string
+      created_at:
+        type: string
+      created_by:
+        type: string
+      customer_name:
+        type: string
+      customer_phone:
+        type: string
+      discount:
+        type: number
+      final_amount:
+        type: number
+      id:
+        type: string
+      local_id:
+        description: For offline sync
+        type: string
+      notes:
+        type: string
+      payment_method:
+        $ref: '#/definitions/Domain.PaymentMethod'
+      payment_status:
+        $ref: '#/definitions/Domain.PaymentStatus'
+      product_id:
+        type: string
+      quantity:
+        type: number
+      status:
+        $ref: '#/definitions/Domain.SaleStatus'
+      synced:
+        type: boolean
+      synced_at:
+        type: string
+      tax:
+        type: number
+      total_amount:
+        type: number
+      unit_price:
+        type: number
+      updated_at:
+        type: string
+    required:
+    - quantity
+    - unit_price
+    type: object
+  Domain.SaleStats:
+    properties:
+      best_selling_day:
+        type: string
+      daily_average:
+        type: number
+      monthly_total:
+        type: number
+      top_product:
+        type: string
+      weekly_total:
+        type: number
+    type: object
+  Domain.SaleStatus:
+    enum:
+    - completed
+    - voided
+    - refunded
+    type: string
+    x-enum-varnames:
+    - SaleStatusCompleted
+    - SaleStatusVoided
+    - SaleStatusRefunded
+  Domain.SaleSummary:
+    properties:
+      date:
+        type: string
+      total_amount:
+        type: number
+      total_discount:
+        type: number
+      total_sales:
+        type: number
+      total_tax:
+        type: number
+      transaction_count:
+        type: integer
+    type: object
+  Domain.SalesReport:
+    properties:
+      average_sale:
+        type: number
+      daily_breakdown:
+        items:
+          $ref: '#/definitions/Domain.DailySales'
+        type: array
+      period:
+        type: string
+      top_products:
+        items:
+          $ref: '#/definitions/Domain.TopProduct'
+        type: array
+      total_amount:
+        type: number
+      total_sales:
+        type: number
+      total_transactions:
+        type: integer
+    type: object
+  Domain.StockMovement:
+    properties:
+      business_id:
+        type: string
+      created_at:
+        type: string
+      created_by:
+        type: string
+      id:
+        type: string
+      new:
+        type: number
+      previous:
+        type: number
+      product_id:
+        type: string
+      quantity:
+        type: number
+      reason:
+        type: string
+      reference_id:
+        type: string
+      reference_type:
+        type: string
+      type:
+        $ref: '#/definitions/Domain.MovementType'
+    type: object
+  Domain.SyncBatch:
+    properties:
+      business_id:
+        type: string
+      device_id:
+        type: string
+      items:
+        items:
+          $ref: '#/definitions/Domain.SyncItem'
+        type: array
+      timestamp:
+        type: string
+    required:
+    - business_id
+    - device_id
+    - items
+    - timestamp
+    type: object
+  Domain.SyncItem:
+    properties:
+      created_at:
+        type: string
+      data: {}
+      entity_type:
+        description: sale, expense, product
+        type: string
+      id:
+        type: string
+      local_id:
+        type: string
+      operation:
+        $ref: '#/definitions/Domain.SyncOperation'
+      updated_at:
+        type: string
+    type: object
+  Domain.SyncOperation:
+    enum:
+    - create
+    - update
+    - delete
+    type: string
+    x-enum-varnames:
+    - SyncOperationCreate
+    - SyncOperationUpdate
+    - SyncOperationDelete
+  Domain.SyncResponse:
+    properties:
+      failed:
+        items:
+          $ref: '#/definitions/Domain.SyncResult'
+        type: array
+      server_time:
+        type: string
+      success:
+        items:
+          $ref: '#/definitions/Domain.SyncResult'
+        type: array
+    type: object
+  Domain.SyncResult:
+    properties:
+      error:
+        type: string
+      local_id:
+        type: string
+      server_id:
+        type: string
+      success:
+        type: boolean
+      timestamp:
+        type: string
+    type: object
+  Domain.SyncStatus:
+    properties:
+      last_sync:
+        type: string
+      pending:
+        type: integer
+      synced_today:
+        type: integer
+      total:
+        type: integer
+    type: object
+  Domain.TopProduct:
+    properties:
+      product_id:
+        type: string
+      product_name:
+        type: string
+      quantity:
+        type: number
+      total_amount:
+        type: number
+    type: object
+  Domain.UpdateBusinessRequest:
+    properties:
+      address:
+        type: string
+      business_type:
+        type: string
+      city:
+        type: string
+      country:
+        type: string
+      currency:
+        type: string
+      description:
+        type: string
+      email:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+      timezone:
+        type: string
+    type: object
+  Domain.UpdateUserRequest:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+    type: object
+  Domain.User:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+      role:
+        $ref: '#/definitions/Domain.UserRole'
+      status:
+        $ref: '#/definitions/Domain.UserStatus'
+      updated_at:
+        type: string
+    required:
+    - name
+    - phone
+    type: object
+  Domain.UserRole:
+    enum:
+    - business_owner
+    - staff
+    - admin
+    type: string
+    x-enum-varnames:
+    - RoleBusinessOwner
+    - RoleStaff
+    - RoleAdmin
+  Domain.UserStatus:
+    enum:
+    - active
+    - inactive
+    - suspended
+    type: string
+    x-enum-varnames:
+    - UserStatusActive
+    - UserStatusInactive
+    - UserStatusSuspended
+host: localhost:8080
+info:
+  contact:
+    email: support@shopops.com
+    name: API Support
+  description: Backend system for shop operations management.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: ShopOps Backend API
+  version: "1.0"
+paths:
+  /api/v1/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Login with phone and password, receive JWT token
+      parameters:
+      - description: Login credentials
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/Domain.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Domain.LoginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Authenticate user
+      tags:
+      - auth
+  /api/v1/auth/refresh:
+    post:
+      description: Get a new access token using the refresh token
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: token
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Refresh JWT token
+      tags:
+      - auth
+  /api/v1/auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user account with phone/email and password
+      parameters:
+      - description: User registration details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/Domain.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/Domain.User'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Register a new user
+      tags:
+      - auth
+  /api/v1/businesses:
+    get:
+      description: Get all businesses owned by the authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/Domain.Business'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: List user's businesses
+      tags:
+      - businesses
+    post:
+      consumes:
+      - application/json
+      description: Create a business profile for the authenticated user
+      parameters:
+      - description: Business details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/Domain.CreateBusinessRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/Domain.Business'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create a new business
+      tags:
+      - businesses
+  /api/v1/businesses/{businessId}:
+    get:
+      description: Get detailed information about a specific business
+      parameters:
+      - description: Business ID
+        in: path
+        name: businessId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Domain.Business'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get business details
+      tags:
+      - businesses
+    patch:
+      consumes:
+      - application/json
+      description: Update business profile and settings
+      parameters:
+      - description: Business ID
+        in: path
+        name: businessId
+        required: true
+        type: string
+      - description: Business update details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/Domain.UpdateBusinessRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Domain.Business'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update business settings
+      tags:
+      - businesses
+  /api/v1/businesses/{businessId}/expenses:
+    get:
+      description: Get expense transactions with filtering and pagination
+      parameters:
+      - description: Business ID
+        in: path
+        name: businessId
+        required: true
+        type: string
+      - description: Start date (YYYY-MM-DD)
+        in: query
+        name: start_date
+        type: string
+      - description: End date (YYYY-MM-DD)
+        in: query
+        name: end_date
+        type: string
+      - description: Expense category
+        in: query
+        name: category
+        type: string
+      - description: Expense status
+        in: query
+        name: status
+        type: string
+      - description: Limit results
+        in: query
+        name: limit
+        type: integer
+      - description: Offset results
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/Domain.Expense'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: List all expenses
+      tags:
+      - expenses
+    post:
+      consumes:
+      - application/json
+      description: Record a business expense with categorization
+      parameters:
+      - description: Business ID
+        in: path
+        name: businessId
+        required: true
+        type: string
+      - description: Expense details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/Domain.CreateExpenseRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/Domain.Expense'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Record a new expense
+      tags:
+      - expenses
+  /api/v1/businesses/{businessId}/expenses/{expenseId}:
+    delete:
+      description: Void an expense transaction
+      parameters:
+      - description: Business ID
+        in: path
+        name: businessId
+        required: true
+        type: string
+      - description: Expense ID
+        in: path
+        name: expenseId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Void/soft delete expense
+      tags:
+      - expenses
+    get:
+      description: Get detailed information about a specific expense
+      parameters:
+      - description: Business ID
+        in: path
+        name: businessId
+        required: true
+        type: string
+      - description: Expense ID
+        in: path
+        name: expenseId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Domain.Expense'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get expense details
+      tags:
+      - expenses
+    patch:
+      consumes:
+      - application/json
+      description: Update expense details (before sync)
+      parameters:
+      - description: Business ID
+        in: path
+        name: businessId
+        required: true
+        type: string
+      - description: Expense ID
+        in: path
+        name: expenseId
+        required: true
+        type: string
+      - description: Expense update details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/Domain.CreateExpenseRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Domain.Expense'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update expense
+      tags:
+      - expenses
+  /api/v1/businesses/{businessId}/expenses/categories:
+    get:
+      description: Get all predefined expense categories
+      parameters:
+      - description: Business ID
+        in: path
+        name: businessId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/Domain.ExpenseCategory'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: List available expense categories
+      tags:
+      - expenses
+  /api/v1/businesses/{businessId}/expenses/summary:
+    get:
+      description: Get aggregated expense data categorized
+      parameters:
+      - description: Business ID
+        in: path
+        name: businessId
+        required: true
+        type: string
+      - description: 'Period: today, week, month'
+        in: query
+        name: period
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/Domain.ExpenseSummary'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get expense summary by category
+      tags:
+      - expenses
+  /api/v1/businesses/{businessId}/inventory/products:
+    get:
+      description: Get products with filtering and search
+      parameters:
+      - description: Business ID
+        in: path
+        name: businessId
+        required: true
+        type: string
+      - description: Product category
+        in: query
+        name: category
+        type: string
+      - description: Product status
+        in: query
+        name: status
+        type: string
+      - description: Filter low stock items
+        in: query
+        name: low_stock
+        type: boolean
+      - description: Search in name, SKU, barcode
+        in: query
+        name: search
+        type: string
+      - description: Limit results
+        in: query
+        name: limit
+        type: integer
+      - description: Offset results
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/Domain.Product'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: List all products
+      tags:
+      - inventory
+    post:
+      consumes:
+      - application/json
+      description: Create a new product with stock information
+      parameters:
+      - description: Business ID
+        in: path
+        name: businessId
+        required: true
+        type: string
+      - description: Product details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/Domain.CreateProductRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/Domain.Product'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Add new product
+      tags:
+      - inventory
+  /api/v1/businesses/{businessId}/inventory/products/{productId}:
+    delete:
+      description: Soft delete a product (mark as discontinued)
+      parameters:
+      - description: Business ID
+        in: path
+        name: businessId
+        required: true
+        type: string
+      - description: Product ID
+        in: path
+        name: productId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete product
+      tags:
+      - inventory
+    get:
+      description: Get detailed information about a specific product
+      parameters:
+      - description: Business ID
+        in: path
+        name: businessId
+        required: true
+        type: string
+      - description: Product ID
+        in: path
+        name: productId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Domain.Product'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get product details
+      tags:
+      - inventory
+    patch:
+      consumes:
+      - application/json
+      description: Update product information and pricing
+      parameters:
+      - description: Business ID
+        in: path
+        name: businessId
+        required: true
+        type: string
+      - description: Product ID
+        in: path
+        name: productId
+        required: true
+        type: string
+      - description: Product update details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/Domain.CreateProductRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Domain.Product'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update product
+      tags:
+      - inventory
+  /api/v1/businesses/{businessId}/inventory/products/{productId}/adjust:
+    post:
+      consumes:
+      - application/json
+      description: Manually adjust product stock with movement type and reason
+      parameters:
+      - description: Business ID
+        in: path
+        name: businessId
+        required: true
+        type: string
+      - description: Product ID
+        in: path
+        name: productId
+        required: true
+        type: string
+      - description: Stock adjustment details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/Domain.AdjustStockRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Manually adjust stock
+      tags:
+      - inventory
+  /api/v1/businesses/{businessId}/inventory/products/{productId}/history:
+    get:
+      description: Get history of stock changes for a product
+      parameters:
+      - description: Business ID
+        in: path
+        name: businessId
+        required: true
+        type: string
+      - description: Product ID
+        in: path
+        name: productId
+        required: true
+        type: string
+      - description: Limit results (default 50)
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/Domain.StockMovement'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get stock movement history
+      tags:
+      - inventory
+  /api/v1/businesses/{businessId}/inventory/products/low-stock:
+    get:
+      description: Get products with stock below minimum threshold
+      parameters:
+      - description: Business ID
+        in: path
+        name: businessId
+        required: true
+        type: string
+      - description: Custom threshold (optional)
+        format: float64
+        in: query
+        name: threshold
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/Domain.Product'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get products below threshold
+      tags:
+      - inventory
+  /api/v1/businesses/{businessId}/reports/dashboard:
+    get:
+      description: Get key metrics for dashboard display (today's data)
+      parameters:
+      - description: Business ID
+        in: path
+        name: businessId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Domain.DashboardData'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get dashboard overview
+      tags:
+      - reports
+  /api/v1/businesses/{businessId}/reports/expenses:
+    get:
+      description: Generate expense report with optional period and category filtering
+      parameters:
+      - description: Business ID
+        in: path
+        name: businessId
+        required: true
+        type: string
+      - description: 'Period: daily, weekly, monthly, yearly, custom'
+        in: query
+        name: period
+        type: string
+      - description: Start date (YYYY-MM-DD) for custom period
+        in: query
+        name: start_date
+        type: string
+      - description: End date (YYYY-MM-DD) for custom period
+        in: query
+        name: end_date
+        type: string
+      - description: Filter by category
+        in: query
+        name: category
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Domain.ExpensesReport'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get expenses report
+      tags:
+      - reports
+  /api/v1/businesses/{businessId}/reports/export:
+    get:
+      description: Export report data to CSV format
+      parameters:
+      - description: Business ID
+        in: path
+        name: businessId
+        required: true
+        type: string
+      - description: 'Report type: sales, expenses, profit, inventory'
+        in: query
+        name: type
+        required: true
+        type: string
+      - description: 'Period: daily, weekly, monthly, yearly, custom'
+        in: query
+        name: period
+        type: string
+      - description: Start date (YYYY-MM-DD) for custom period
+        in: query
+        name: start_date
+        type: string
+      - description: End date (YYYY-MM-DD) for custom period
+        in: query
+        name: end_date
+        type: string
+      produces:
+      - text/csv
+      responses:
+        "200":
+          description: CSV file
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Generate CSV export
+      tags:
+      - reports
+  /api/v1/businesses/{businessId}/reports/inventory:
+    get:
+      description: Generate inventory report with low stock alerts
+      parameters:
+      - description: Business ID
+        in: path
+        name: businessId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Domain.InventoryReport'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get inventory status report
+      tags:
+      - reports
+  /api/v1/businesses/{businessId}/reports/profit:
+    get:
+      description: Generate profit/loss report with optional period filtering
+      parameters:
+      - description: Business ID
+        in: path
+        name: businessId
+        required: true
+        type: string
+      - description: 'Period: daily, weekly, monthly, yearly, custom'
+        in: query
+        name: period
+        type: string
+      - description: Start date (YYYY-MM-DD) for custom period
+        in: query
+        name: start_date
+        type: string
+      - description: End date (YYYY-MM-DD) for custom period
+        in: query
+        name: end_date
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Domain.ProfitReport'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get profit report
+      tags:
+      - reports
+  /api/v1/businesses/{businessId}/reports/profit/summary:
+    get:
+      description: Get profit summary with custom date range
+      parameters:
+      - description: Business ID
+        in: path
+        name: businessId
+        required: true
+        type: string
+      - description: 'Period: daily, weekly, monthly, yearly, custom'
+        in: query
+        name: period
+        type: string
+      - description: Start date (YYYY-MM-DD) for custom period
+        in: query
+        name: start_date
+        type: string
+      - description: End date (YYYY-MM-DD) for custom period
+        in: query
+        name: end_date
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Domain.ProfitReport'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get profit summary for period
+      tags:
+      - reports
+  /api/v1/businesses/{businessId}/reports/profit/trends:
+    get:
+      description: Get profit trends for multiple periods
+      parameters:
+      - description: Business ID
+        in: path
+        name: businessId
+        required: true
+        type: string
+      - description: 'Period: daily, weekly, monthly'
+        in: query
+        name: period
+        type: string
+      - description: Number of weeks to analyze (default 12)
+        in: query
+        name: weeks
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/Domain.ProfitTrend'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get profit trends over time
+      tags:
+      - reports
+  /api/v1/businesses/{businessId}/reports/sales:
+    get:
+      description: Generate sales report with optional period filtering
+      parameters:
+      - description: Business ID
+        in: path
+        name: businessId
+        required: true
+        type: string
+      - description: 'Period: daily, weekly, monthly, yearly, custom'
+        in: query
+        name: period
+        type: string
+      - description: Start date (YYYY-MM-DD) for custom period
+        in: query
+        name: start_date
+        type: string
+      - description: End date (YYYY-MM-DD) for custom period
+        in: query
+        name: end_date
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Domain.SalesReport'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get sales report
+      tags:
+      - reports
+  /api/v1/businesses/{businessId}/sales:
+    get:
+      description: Get sales transactions with filtering and pagination
+      parameters:
+      - description: Business ID
+        in: path
+        name: businessId
+        required: true
+        type: string
+      - description: Start date (YYYY-MM-DD)
+        in: query
+        name: start_date
+        type: string
+      - description: End date (YYYY-MM-DD)
+        in: query
+        name: end_date
+        type: string
+      - description: Sale status
+        in: query
+        name: status
+        type: string
+      - description: Payment method
+        in: query
+        name: payment_method
+        type: string
+      - description: Payment status
+        in: query
+        name: payment_status
+        type: string
+      - description: Limit results
+        in: query
+        name: limit
+        type: integer
+      - description: Offset results
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/Domain.Sale'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: List all sales
+      tags:
+      - sales
+    post:
+      consumes:
+      - application/json
+      description: Record a sales transaction with optional product association
+      parameters:
+      - description: Business ID
+        in: path
+        name: businessId
+        required: true
+        type: string
+      - description: Sale details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/Domain.CreateSaleRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/Domain.Sale'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Record a new sale
+      tags:
+      - sales
+  /api/v1/businesses/{businessId}/sales/{saleId}:
+    delete:
+      description: Void a completed sale transaction
+      parameters:
+      - description: Business ID
+        in: path
+        name: businessId
+        required: true
+        type: string
+      - description: Sale ID
+        in: path
+        name: saleId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Void/soft delete sale
+      tags:
+      - sales
+    get:
+      description: Get detailed information about a specific sale
+      parameters:
+      - description: Business ID
+        in: path
+        name: businessId
+        required: true
+        type: string
+      - description: Sale ID
+        in: path
+        name: saleId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Domain.Sale'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get sale details
+      tags:
+      - sales
+    patch:
+      consumes:
+      - application/json
+      description: Update sale details (before sync)
+      parameters:
+      - description: Business ID
+        in: path
+        name: businessId
+        required: true
+        type: string
+      - description: Sale ID
+        in: path
+        name: saleId
+        required: true
+        type: string
+      - description: Sale update details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/Domain.CreateSaleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Domain.Sale'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update sale
+      tags:
+      - sales
+  /api/v1/businesses/{businessId}/sales/stats:
+    get:
+      description: Get sales statistics and analytics
+      parameters:
+      - description: Business ID
+        in: path
+        name: businessId
+        required: true
+        type: string
+      - description: 'Period: today, week, month'
+        in: query
+        name: period
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Domain.SaleStats'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get sales statistics
+      tags:
+      - sales
+  /api/v1/businesses/{businessId}/sales/summary:
+    get:
+      description: Get aggregated sales data for a period (daily/weekly/monthly)
+      parameters:
+      - description: Business ID
+        in: path
+        name: businessId
+        required: true
+        type: string
+      - description: 'Period: today, week, month'
+        in: query
+        name: period
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Domain.SaleSummary'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get sales summary
+      tags:
+      - sales
+  /api/v1/businesses/{businessId}/sync/batch:
+    post:
+      consumes:
+      - application/json
+      description: Process batch sync of offline transactions (sales, expenses, products)
+      parameters:
+      - description: Business ID
+        in: path
+        name: businessId
+        required: true
+        type: string
+      - description: Batch sync data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/Domain.SyncBatch'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Domain.SyncResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Sync multiple transactions
+      tags:
+      - sync
+  /api/v1/businesses/{businessId}/sync/last-sync:
+    get:
+      description: Get last synchronization timestamp for specific device
+      parameters:
+      - description: Business ID
+        in: path
+        name: businessId
+        required: true
+        type: string
+      - description: Device ID
+        in: query
+        name: device_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get last sync time for device
+      tags:
+      - sync
+  /api/v1/businesses/{businessId}/sync/status:
+    get:
+      description: Get synchronization status including last sync time and pending
+        items
+      parameters:
+      - description: Business ID
+        in: path
+        name: businessId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Domain.SyncStatus'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get sync status for business
+      tags:
+      - sync
+  /api/v1/users/me:
+    get:
+      description: Retrieve authenticated user's profile information
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Domain.User'
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get current user profile
+      tags:
+      - users
+    patch:
+      consumes:
+      - application/json
+      description: Update current user's profile information
+      parameters:
+      - description: User update details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/Domain.UpdateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Domain.User'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update user profile
+      tags:
+      - users
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

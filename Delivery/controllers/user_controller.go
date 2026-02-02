@@ -16,7 +16,17 @@ func NewUserController(userUC Usecases.UserUseCase) *UserController {
 	return &UserController{userUC: userUC}
 }
 
-// Register handles user registration
+// Register godoc
+// @Summary      Register a new user
+// @Description  Create a new user account with phone/email and password
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        request  body  Domain.RegisterRequest  true  "User registration details"
+// @Success      201  {object}  Domain.User
+// @Failure      400  {object}  map[string]interface{}
+// @Failure      409  {object}  map[string]interface{}
+// @Router       /api/v1/auth/register [post]
 func (c *UserController) Register(ctx *gin.Context) {
 	var req Domain.RegisterRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -33,7 +43,17 @@ func (c *UserController) Register(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, user)
 }
 
-// Login handles user authentication
+// Login godoc
+// @Summary      Authenticate user
+// @Description  Login with phone and password, receive JWT token
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        request  body  Domain.LoginRequest  true  "Login credentials"
+// @Success      200  {object}  Domain.LoginResponse
+// @Failure      400  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
+// @Router       /api/v1/auth/login [post]
 func (c *UserController) Login(ctx *gin.Context) {
 	var req Domain.LoginRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -50,7 +70,15 @@ func (c *UserController) Login(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, loginResponse)
 }
 
-// RefreshToken handles token refresh
+// RefreshToken godoc
+// @Summary      Refresh JWT token
+// @Description  Get a new access token using the refresh token
+// @Tags         auth
+// @Produce      json
+// @Success      200  {object}  map[string]interface{} "token"
+// @Failure      401  {object}  map[string]interface{}
+// @Router       /api/v1/auth/refresh [post]
+// @Security     BearerAuth
 func (c *UserController) RefreshToken(ctx *gin.Context) {
 	userID, exists := ctx.Get("userID")
 	if !exists {
@@ -67,7 +95,15 @@ func (c *UserController) RefreshToken(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"token": token})
 }
 
-// GetCurrentUser retrieves current user profile
+// GetCurrentUser godoc
+// @Summary      Get current user profile
+// @Description  Retrieve authenticated user's profile information
+// @Tags         users
+// @Produce      json
+// @Success      200  {object}  Domain.User
+// @Failure      401  {object}  map[string]interface{}
+// @Router       /api/v1/users/me [get]
+// @Security     BearerAuth
 func (c *UserController) GetCurrentUser(ctx *gin.Context) {
 	userID, exists := ctx.Get("userID")
 	if !exists {
@@ -84,7 +120,18 @@ func (c *UserController) GetCurrentUser(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, user)
 }
 
-// UpdateUser updates user profile
+// UpdateUser godoc
+// @Summary      Update user profile
+// @Description  Update current user's profile information
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Param        request  body  Domain.UpdateUserRequest  true  "User update details"
+// @Success      200  {object}  Domain.User
+// @Failure      400  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
+// @Router       /api/v1/users/me [patch]
+// @Security     BearerAuth
 func (c *UserController) UpdateUser(ctx *gin.Context) {
 	userID, exists := ctx.Get("userID")
 	if !exists {

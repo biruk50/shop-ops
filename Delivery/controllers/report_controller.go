@@ -18,7 +18,17 @@ func NewReportController(reportUC Usecases.ReportUseCase) *ReportController {
 	return &ReportController{reportUC: reportUC}
 }
 
-// GetDashboard gets dashboard overview
+// GetDashboard godoc
+// @Summary      Get dashboard overview
+// @Description  Get key metrics for dashboard display (today's data)
+// @Tags         reports
+// @Produce      json
+// @Param        businessId  path  string  true  "Business ID"
+// @Success      200  {object}  Domain.DashboardData
+// @Failure      400  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
+// @Router       /api/v1/businesses/{businessId}/reports/dashboard [get]
+// @Security     BearerAuth
 func (c *ReportController) GetDashboard(ctx *gin.Context) {
 	businessID := ctx.Param("businessId")
 	if businessID == "" {
@@ -35,7 +45,20 @@ func (c *ReportController) GetDashboard(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, data)
 }
 
-// GetSalesReport gets sales report
+// GetSalesReport godoc
+// @Summary      Get sales report
+// @Description  Generate sales report with optional period filtering
+// @Tags         reports
+// @Produce      json
+// @Param        businessId  path    string  true   "Business ID"
+// @Param        period      query   string  false  "Period: daily, weekly, monthly, yearly, custom"
+// @Param        start_date  query   string  false  "Start date (YYYY-MM-DD) for custom period"
+// @Param        end_date    query   string  false  "End date (YYYY-MM-DD) for custom period"
+// @Success      200  {object}  Domain.SalesReport
+// @Failure      400  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
+// @Router       /api/v1/businesses/{businessId}/reports/sales [get]
+// @Security     BearerAuth
 func (c *ReportController) GetSalesReport(ctx *gin.Context) {
 	businessID := ctx.Param("businessId")
 	if businessID == "" {
@@ -76,7 +99,21 @@ func (c *ReportController) GetSalesReport(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, report)
 }
 
-// GetExpensesReport gets expenses report
+// GetExpensesReport godoc
+// @Summary      Get expenses report
+// @Description  Generate expense report with optional period and category filtering
+// @Tags         reports
+// @Produce      json
+// @Param        businessId  path    string  true   "Business ID"
+// @Param        period      query   string  false  "Period: daily, weekly, monthly, yearly, custom"
+// @Param        start_date  query   string  false  "Start date (YYYY-MM-DD) for custom period"
+// @Param        end_date    query   string  false  "End date (YYYY-MM-DD) for custom period"
+// @Param        category    query   string  false  "Filter by category"
+// @Success      200  {object}  Domain.ExpensesReport
+// @Failure      400  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
+// @Router       /api/v1/businesses/{businessId}/reports/expenses [get]
+// @Security     BearerAuth
 func (c *ReportController) GetExpensesReport(ctx *gin.Context) {
 	businessID := ctx.Param("businessId")
 	if businessID == "" {
@@ -122,7 +159,20 @@ func (c *ReportController) GetExpensesReport(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, report)
 }
 
-// GetProfitReport gets profit report
+// GetProfitReport godoc
+// @Summary      Get profit report
+// @Description  Generate profit/loss report with optional period filtering
+// @Tags         reports
+// @Produce      json
+// @Param        businessId  path    string  true   "Business ID"
+// @Param        period      query   string  false  "Period: daily, weekly, monthly, yearly, custom"
+// @Param        start_date  query   string  false  "Start date (YYYY-MM-DD) for custom period"
+// @Param        end_date    query   string  false  "End date (YYYY-MM-DD) for custom period"
+// @Success      200  {object}  Domain.ProfitReport
+// @Failure      400  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
+// @Router       /api/v1/businesses/{businessId}/reports/profit [get]
+// @Security     BearerAuth
 func (c *ReportController) GetProfitReport(ctx *gin.Context) {
 	businessID := ctx.Param("businessId")
 	if businessID == "" {
@@ -163,8 +213,17 @@ func (c *ReportController) GetProfitReport(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, report)
 }
 
-// GetInventoryReport gets inventory report
-// GetInventoryReport gets inventory report
+// GetInventoryReport godoc
+// @Summary      Get inventory status report
+// @Description  Generate inventory report with low stock alerts
+// @Tags         reports
+// @Produce      json
+// @Param        businessId  path  string  true  "Business ID"
+// @Success      200  {object}  Domain.InventoryReport
+// @Failure      400  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
+// @Router       /api/v1/businesses/{businessId}/reports/inventory [get]
+// @Security     BearerAuth
 func (c *ReportController) GetInventoryReport(ctx *gin.Context) {
 	businessID := ctx.Param("businessId")
 	if businessID == "" {
@@ -185,7 +244,21 @@ func (c *ReportController) GetInventoryReport(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, report)
 }
 
-// ExportReport generates CSV export
+// ExportReport godoc
+// @Summary      Generate CSV export
+// @Description  Export report data to CSV format
+// @Tags         reports
+// @Produce      text/csv
+// @Param        businessId  path    string  true   "Business ID"
+// @Param        type        query   string  true   "Report type: sales, expenses, profit, inventory"
+// @Param        period      query   string  false  "Period: daily, weekly, monthly, yearly, custom"
+// @Param        start_date  query   string  false  "Start date (YYYY-MM-DD) for custom period"
+// @Param        end_date    query   string  false  "End date (YYYY-MM-DD) for custom period"
+// @Success      200  {string}  string  "CSV file"
+// @Failure      400  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
+// @Router       /api/v1/businesses/{businessId}/reports/export [get]
+// @Security     BearerAuth
 func (c *ReportController) ExportReport(ctx *gin.Context) {
 	businessID := ctx.Param("businessId")
 	if businessID == "" {
@@ -239,7 +312,20 @@ func (c *ReportController) ExportReport(ctx *gin.Context) {
 	ctx.Data(http.StatusOK, "text/csv", data)
 }
 
-// GetProfitSummary gets profit summary for period
+// GetProfitSummary godoc
+// @Summary      Get profit summary for period
+// @Description  Get profit summary with custom date range
+// @Tags         reports
+// @Produce      json
+// @Param        businessId  path    string  true   "Business ID"
+// @Param        period      query   string  false  "Period: daily, weekly, monthly, yearly, custom"
+// @Param        start_date  query   string  false  "Start date (YYYY-MM-DD) for custom period"
+// @Param        end_date    query   string  false  "End date (YYYY-MM-DD) for custom period"
+// @Success      200  {object}  Domain.ProfitReport
+// @Failure      400  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
+// @Router       /api/v1/businesses/{businessId}/reports/profit/summary [get]
+// @Security     BearerAuth
 func (c *ReportController) GetProfitSummary(ctx *gin.Context) {
 	businessID := ctx.Param("businessId")
 	if businessID == "" {
@@ -271,7 +357,19 @@ func (c *ReportController) GetProfitSummary(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, report)
 }
 
-// GetProfitTrends gets profit trends over time
+// GetProfitTrends godoc
+// @Summary      Get profit trends over time
+// @Description  Get profit trends for multiple periods
+// @Tags         reports
+// @Produce      json
+// @Param        businessId  path    string  true   "Business ID"
+// @Param        period      query   string  false  "Period: daily, weekly, monthly"
+// @Param        weeks       query   int     false  "Number of weeks to analyze (default 12)"
+// @Success      200  {array}   Domain.ProfitTrend
+// @Failure      400  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
+// @Router       /api/v1/businesses/{businessId}/reports/profit/trends [get]
+// @Security     BearerAuth
 func (c *ReportController) GetProfitTrends(ctx *gin.Context) {
 	businessID := ctx.Param("businessId")
 	if businessID == "" {

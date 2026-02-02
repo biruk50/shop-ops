@@ -18,7 +18,20 @@ func NewSalesController(salesUC Usecases.SalesUseCase) *SalesController {
 	return &SalesController{salesUC: salesUC}
 }
 
-// CreateSale records a new sale
+// CreateSale godoc
+// @Summary      Record a new sale
+// @Description  Record a sales transaction with optional product association
+// @Tags         sales
+// @Accept       json
+// @Produce      json
+// @Param        businessId  path  string                    true  "Business ID"
+// @Param        request     body  Domain.CreateSaleRequest  true  "Sale details"
+// @Success      201  {object}  Domain.Sale
+// @Failure      400  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
+// @Failure      404  {object}  map[string]interface{}
+// @Router       /api/v1/businesses/{businessId}/sales [post]
+// @Security     BearerAuth
 func (c *SalesController) CreateSale(ctx *gin.Context) {
 	businessID := ctx.Param("businessId")
 	if businessID == "" {
@@ -47,7 +60,24 @@ func (c *SalesController) CreateSale(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, sale)
 }
 
-// GetSales lists all sales with filtering
+// GetSales godoc
+// @Summary      List all sales
+// @Description  Get sales transactions with filtering and pagination
+// @Tags         sales
+// @Produce      json
+// @Param        businessId      path      string  true   "Business ID"
+// @Param        start_date      query     string  false  "Start date (YYYY-MM-DD)"
+// @Param        end_date        query     string  false  "End date (YYYY-MM-DD)"
+// @Param        status          query     string  false  "Sale status"
+// @Param        payment_method  query     string  false  "Payment method"
+// @Param        payment_status  query     string  false  "Payment status"
+// @Param        limit           query     int     false  "Limit results"
+// @Param        offset          query     int     false  "Offset results"
+// @Success      200  {array}   Domain.Sale
+// @Failure      400  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
+// @Router       /api/v1/businesses/{businessId}/sales [get]
+// @Security     BearerAuth
 func (c *SalesController) GetSales(ctx *gin.Context) {
 	businessID := ctx.Param("businessId")
 	if businessID == "" {
@@ -110,7 +140,19 @@ func (c *SalesController) GetSales(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, sales)
 }
 
-// GetSale gets sale details
+// GetSale godoc
+// @Summary      Get sale details
+// @Description  Get detailed information about a specific sale
+// @Tags         sales
+// @Produce      json
+// @Param        businessId  path  string  true  "Business ID"
+// @Param        saleId      path  string  true  "Sale ID"
+// @Success      200  {object}  Domain.Sale
+// @Failure      400  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
+// @Failure      404  {object}  map[string]interface{}
+// @Router       /api/v1/businesses/{businessId}/sales/{saleId} [get]
+// @Security     BearerAuth
 func (c *SalesController) GetSale(ctx *gin.Context) {
 	businessID := ctx.Param("businessId")
 	if businessID == "" {
@@ -133,7 +175,21 @@ func (c *SalesController) GetSale(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, sale)
 }
 
-// UpdateSale updates sale (before sync)
+// UpdateSale godoc
+// @Summary      Update sale
+// @Description  Update sale details (before sync)
+// @Tags         sales
+// @Accept       json
+// @Produce      json
+// @Param        businessId  path  string                    true  "Business ID"
+// @Param        saleId      path  string                    true  "Sale ID"
+// @Param        request     body  Domain.CreateSaleRequest  true  "Sale update details"
+// @Success      200  {object}  Domain.Sale
+// @Failure      400  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
+// @Failure      404  {object}  map[string]interface{}
+// @Router       /api/v1/businesses/{businessId}/sales/{saleId} [patch]
+// @Security     BearerAuth
 func (c *SalesController) UpdateSale(ctx *gin.Context) {
 	businessID := ctx.Param("businessId")
 	if businessID == "" {
@@ -168,7 +224,19 @@ func (c *SalesController) UpdateSale(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, sale)
 }
 
-// VoidSale voids a sale
+// VoidSale godoc
+// @Summary      Void/soft delete sale
+// @Description  Void a completed sale transaction
+// @Tags         sales
+// @Produce      json
+// @Param        businessId  path  string  true  "Business ID"
+// @Param        saleId      path  string  true  "Sale ID"
+// @Success      200  {object}  map[string]interface{}
+// @Failure      400  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
+// @Failure      404  {object}  map[string]interface{}
+// @Router       /api/v1/businesses/{businessId}/sales/{saleId} [delete]
+// @Security     BearerAuth
 func (c *SalesController) VoidSale(ctx *gin.Context) {
 	businessID := ctx.Param("businessId")
 	if businessID == "" {
@@ -196,7 +264,18 @@ func (c *SalesController) VoidSale(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "Sale voided successfully"})
 }
 
-// GetSalesSummary gets sales summary
+// GetSalesSummary godoc
+// @Summary      Get sales summary
+// @Description  Get aggregated sales data for a period (daily/weekly/monthly)
+// @Tags         sales
+// @Produce      json
+// @Param        businessId  path    string  true   "Business ID"
+// @Param        period      query   string  false  "Period: today, week, month"
+// @Success      200  {object}  Domain.SaleSummary
+// @Failure      400  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
+// @Router       /api/v1/businesses/{businessId}/sales/summary [get]
+// @Security     BearerAuth
 func (c *SalesController) GetSalesSummary(ctx *gin.Context) {
 	businessID := ctx.Param("businessId")
 	if businessID == "" {
@@ -215,7 +294,18 @@ func (c *SalesController) GetSalesSummary(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, summary)
 }
 
-// GetSalesStats gets sales statistics
+// GetSalesStats godoc
+// @Summary      Get sales statistics
+// @Description  Get sales statistics and analytics
+// @Tags         sales
+// @Produce      json
+// @Param        businessId  path    string  true   "Business ID"
+// @Param        period      query   string  false  "Period: today, week, month"
+// @Success      200  {object}  Domain.SaleStats
+// @Failure      400  {object}  map[string]interface{}
+// @Failure      401  {object}  map[string]interface{}
+// @Router       /api/v1/businesses/{businessId}/sales/stats [get]
+// @Security     BearerAuth
 func (c *SalesController) GetSalesStats(ctx *gin.Context) {
 	businessID := ctx.Param("businessId")
 	if businessID == "" {
