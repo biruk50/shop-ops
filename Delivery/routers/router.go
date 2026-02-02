@@ -1,7 +1,6 @@
 package routers
 
 import (
-	"time"
 	controllers "ShopOps/Delivery/controllers"
 	Infrastructure "ShopOps/Infrastructure"
 	Repositories "ShopOps/Repositories"
@@ -153,10 +152,7 @@ func SetupRouter(db *mongo.Database) *gin.Engine {
 
 	// Health check
 	router.GET("/health", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"status":    "OK",
-			"timestamp": time.Now().Unix(),
-		})
+		c.JSON(200, gin.H{ "status":    "OK"})
 	})
 
 	return router
