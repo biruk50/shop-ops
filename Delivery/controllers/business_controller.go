@@ -4,7 +4,9 @@ import (
 	"net/http"
 
 	Domain "ShopOps/Domain"
+	Infrastructure "ShopOps/Infrastructure"
 	Usecases "ShopOps/Usecases"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -31,19 +33,19 @@ func NewBusinessController(businessUC Usecases.BusinessUseCase) *BusinessControl
 func (c *BusinessController) CreateBusiness(ctx *gin.Context) {
 	userID, exists := ctx.Get("userID")
 	if !exists {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		Infrastructure.JSONError(ctx, http.StatusUnauthorized, nil, "User not authenticated")
 		return
 	}
 
 	var req Domain.CreateBusinessRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, err, "")
 		return
 	}
 
 	business, err := c.businessUC.CreateBusiness(userID.(string), req)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, err, "")
 		return
 	}
 
@@ -62,13 +64,13 @@ func (c *BusinessController) CreateBusiness(ctx *gin.Context) {
 func (c *BusinessController) GetBusinesses(ctx *gin.Context) {
 	userID, exists := ctx.Get("userID")
 	if !exists {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		Infrastructure.JSONError(ctx, http.StatusUnauthorized, nil, "User not authenticated")
 		return
 	}
 
 	businesses, err := c.businessUC.GetUserBusinesses(userID.(string))
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusInternalServerError, err, "")
 		return
 	}
 
@@ -90,13 +92,13 @@ func (c *BusinessController) GetBusinesses(ctx *gin.Context) {
 func (c *BusinessController) GetBusiness(ctx *gin.Context) {
 	businessID := ctx.Param("businessId")
 	if businessID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Business ID is required"})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, nil, "Business ID is required")
 		return
 	}
 
 	business, err := c.businessUC.GetBusinessByID(businessID)
 	if err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusNotFound, err, "")
 		return
 	}
 
@@ -120,25 +122,25 @@ func (c *BusinessController) GetBusiness(ctx *gin.Context) {
 func (c *BusinessController) UpdateBusiness(ctx *gin.Context) {
 	userID, exists := ctx.Get("userID")
 	if !exists {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		Infrastructure.JSONError(ctx, http.StatusUnauthorized, nil, "User not authenticated")
 		return
 	}
 
 	businessID := ctx.Param("businessId")
 	if businessID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Business ID is required"})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, nil, "Business ID is required")
 		return
 	}
 
 	var req Domain.UpdateBusinessRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, err, "")
 		return
 	}
 
 	business, err := c.businessUC.UpdateBusiness(businessID, userID.(string), req)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, err, "")
 		return
 	}
 

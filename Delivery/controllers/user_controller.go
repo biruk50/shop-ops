@@ -4,7 +4,9 @@ import (
 	"net/http"
 
 	Domain "ShopOps/Domain"
+	Infrastructure "ShopOps/Infrastructure"
 	Usecases "ShopOps/Usecases"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -30,13 +32,13 @@ func NewUserController(userUC Usecases.UserUseCase) *UserController {
 func (c *UserController) Register(ctx *gin.Context) {
 	var req Domain.RegisterRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, err, "")
 		return
 	}
 
 	user, err := c.userUC.Register(req)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, err, "")
 		return
 	}
 
@@ -57,13 +59,13 @@ func (c *UserController) Register(ctx *gin.Context) {
 func (c *UserController) Login(ctx *gin.Context) {
 	var req Domain.LoginRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, err, "")
 		return
 	}
 
 	loginResponse, err := c.userUC.Login(req)
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusUnauthorized, err, "")
 		return
 	}
 
@@ -82,13 +84,13 @@ func (c *UserController) Login(ctx *gin.Context) {
 func (c *UserController) RefreshToken(ctx *gin.Context) {
 	userID, exists := ctx.Get("userID")
 	if !exists {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		Infrastructure.JSONError(ctx, http.StatusUnauthorized, nil, "User not authenticated")
 		return
 	}
 
 	token, err := c.userUC.RefreshToken(userID.(string))
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusInternalServerError, err, "")
 		return
 	}
 
@@ -107,13 +109,13 @@ func (c *UserController) RefreshToken(ctx *gin.Context) {
 func (c *UserController) GetCurrentUser(ctx *gin.Context) {
 	userID, exists := ctx.Get("userID")
 	if !exists {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		Infrastructure.JSONError(ctx, http.StatusUnauthorized, nil, "User not authenticated")
 		return
 	}
 
 	user, err := c.userUC.GetCurrentUser(userID.(string))
 	if err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusNotFound, err, "")
 		return
 	}
 
@@ -135,19 +137,19 @@ func (c *UserController) GetCurrentUser(ctx *gin.Context) {
 func (c *UserController) UpdateUser(ctx *gin.Context) {
 	userID, exists := ctx.Get("userID")
 	if !exists {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		Infrastructure.JSONError(ctx, http.StatusUnauthorized, nil, "User not authenticated")
 		return
 	}
 
 	var req Domain.UpdateUserRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, err, "")
 		return
 	}
 
 	user, err := c.userUC.UpdateUser(userID.(string), req)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, err, "")
 		return
 	}
 

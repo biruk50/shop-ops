@@ -6,7 +6,9 @@ import (
 	"time"
 
 	Domain "ShopOps/Domain"
+	Infrastructure "ShopOps/Infrastructure"
 	Usecases "ShopOps/Usecases"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -32,13 +34,13 @@ func NewReportController(reportUC Usecases.ReportUseCase) *ReportController {
 func (c *ReportController) GetDashboard(ctx *gin.Context) {
 	businessID := ctx.Param("businessId")
 	if businessID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Business ID is required"})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, nil, "Business ID is required")
 		return
 	}
 
 	data, err := c.reportUC.GetDashboardData(businessID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusInternalServerError, err, "")
 		return
 	}
 
@@ -62,7 +64,7 @@ func (c *ReportController) GetDashboard(ctx *gin.Context) {
 func (c *ReportController) GetSalesReport(ctx *gin.Context) {
 	businessID := ctx.Param("businessId")
 	if businessID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Business ID is required"})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, nil, "Business ID is required")
 		return
 	}
 
@@ -92,7 +94,7 @@ func (c *ReportController) GetSalesReport(ctx *gin.Context) {
 
 	report, err := c.reportUC.GenerateReport(req)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusInternalServerError, err, "")
 		return
 	}
 
@@ -117,7 +119,7 @@ func (c *ReportController) GetSalesReport(ctx *gin.Context) {
 func (c *ReportController) GetExpensesReport(ctx *gin.Context) {
 	businessID := ctx.Param("businessId")
 	if businessID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Business ID is required"})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, nil, "Business ID is required")
 		return
 	}
 
@@ -152,7 +154,7 @@ func (c *ReportController) GetExpensesReport(ctx *gin.Context) {
 
 	report, err := c.reportUC.GenerateReport(req)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusInternalServerError, err, "")
 		return
 	}
 
@@ -176,7 +178,7 @@ func (c *ReportController) GetExpensesReport(ctx *gin.Context) {
 func (c *ReportController) GetProfitReport(ctx *gin.Context) {
 	businessID := ctx.Param("businessId")
 	if businessID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Business ID is required"})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, nil, "Business ID is required")
 		return
 	}
 
@@ -206,7 +208,7 @@ func (c *ReportController) GetProfitReport(ctx *gin.Context) {
 
 	report, err := c.reportUC.GenerateReport(req)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusInternalServerError, err, "")
 		return
 	}
 
@@ -227,7 +229,7 @@ func (c *ReportController) GetProfitReport(ctx *gin.Context) {
 func (c *ReportController) GetInventoryReport(ctx *gin.Context) {
 	businessID := ctx.Param("businessId")
 	if businessID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Business ID is required"})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, nil, "Business ID is required")
 		return
 	}
 
@@ -237,7 +239,7 @@ func (c *ReportController) GetInventoryReport(ctx *gin.Context) {
 
 	report, err := c.reportUC.GenerateReport(req)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusInternalServerError, err, "")
 		return
 	}
 
@@ -262,7 +264,7 @@ func (c *ReportController) GetInventoryReport(ctx *gin.Context) {
 func (c *ReportController) ExportReport(ctx *gin.Context) {
 	businessID := ctx.Param("businessId")
 	if businessID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Business ID is required"})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, nil, "Business ID is required")
 		return
 	}
 
@@ -273,7 +275,7 @@ func (c *ReportController) ExportReport(ctx *gin.Context) {
 	if reportType := ctx.Query("type"); reportType != "" {
 		req.Type = Domain.ReportType(reportType)
 	} else {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Report type is required"})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, nil, "Report type is required")
 		return
 	}
 
@@ -303,7 +305,7 @@ func (c *ReportController) ExportReport(ctx *gin.Context) {
 
 	data, filename, err := c.reportUC.ExportReport(req)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusInternalServerError, err, "")
 		return
 	}
 
@@ -329,7 +331,7 @@ func (c *ReportController) ExportReport(ctx *gin.Context) {
 func (c *ReportController) GetProfitSummary(ctx *gin.Context) {
 	businessID := ctx.Param("businessId")
 	if businessID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Business ID is required"})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, nil, "Business ID is required")
 		return
 	}
 
@@ -350,7 +352,7 @@ func (c *ReportController) GetProfitSummary(ctx *gin.Context) {
 
 	report, err := c.reportUC.GetProfitSummary(businessID, period, startDate, endDate)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusInternalServerError, err, "")
 		return
 	}
 
@@ -373,7 +375,7 @@ func (c *ReportController) GetProfitSummary(ctx *gin.Context) {
 func (c *ReportController) GetProfitTrends(ctx *gin.Context) {
 	businessID := ctx.Param("businessId")
 	if businessID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Business ID is required"})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, nil, "Business ID is required")
 		return
 	}
 
@@ -387,7 +389,7 @@ func (c *ReportController) GetProfitTrends(ctx *gin.Context) {
 
 	trends, err := c.reportUC.GetProfitTrends(businessID, period, weeks)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusInternalServerError, err, "")
 		return
 	}
 

@@ -4,7 +4,9 @@ import (
 	"net/http"
 
 	Domain "ShopOps/Domain"
+	Infrastructure "ShopOps/Infrastructure"
 	Usecases "ShopOps/Usecases"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -33,19 +35,19 @@ func NewSyncController(syncUC Usecases.SyncUseCase) *SyncController {
 func (c *SyncController) ProcessBatch(ctx *gin.Context) {
 	businessID := ctx.Param("businessId")
 	if businessID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Business ID is required"})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, nil, "Business ID is required")
 		return
 	}
 
 	_, exists := ctx.Get("userID")
 	if !exists {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		Infrastructure.JSONError(ctx, http.StatusUnauthorized, nil, "User not authenticated")
 		return
 	}
 
 	var batch Domain.SyncBatch
 	if err := ctx.ShouldBindJSON(&batch); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, err, "")
 		return
 	}
 
@@ -54,7 +56,7 @@ func (c *SyncController) ProcessBatch(ctx *gin.Context) {
 
 	response, err := c.syncUC.ProcessBatch(batch)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, err, "")
 		return
 	}
 
@@ -75,19 +77,19 @@ func (c *SyncController) ProcessBatch(ctx *gin.Context) {
 func (c *SyncController) GetSyncStatus(ctx *gin.Context) {
 	businessID := ctx.Param("businessId")
 	if businessID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Business ID is required"})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, nil, "Business ID is required")
 		return
 	}
 
 	_, exists := ctx.Get("userID")
 	if !exists {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		Infrastructure.JSONError(ctx, http.StatusUnauthorized, nil, "User not authenticated")
 		return
 	}
 
 	status, err := c.syncUC.GetSyncStatus(businessID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusInternalServerError, err, "")
 		return
 	}
 
@@ -109,19 +111,19 @@ func (c *SyncController) GetSyncStatus(ctx *gin.Context) {
 func (c *SyncController) GetLastSync(ctx *gin.Context) {
 	businessID := ctx.Param("businessId")
 	if businessID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Business ID is required"})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, nil, "Business ID is required")
 		return
 	}
 
 	deviceID := ctx.Query("device_id")
 	if deviceID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Device ID is required"})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, nil, "Device ID is required")
 		return
 	}
 
 	lastSync, err := c.syncUC.GetLastSync(businessID, deviceID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusInternalServerError, err, "")
 		return
 	}
 

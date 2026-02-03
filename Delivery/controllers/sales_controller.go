@@ -6,7 +6,9 @@ import (
 	"time"
 
 	Domain "ShopOps/Domain"
+	Infrastructure "ShopOps/Infrastructure"
 	Usecases "ShopOps/Usecases"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -35,25 +37,25 @@ func NewSalesController(salesUC Usecases.SalesUseCase) *SalesController {
 func (c *SalesController) CreateSale(ctx *gin.Context) {
 	businessID := ctx.Param("businessId")
 	if businessID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Business ID is required"})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, nil, "Business ID is required")
 		return
 	}
 
 	userID, exists := ctx.Get("userID")
 	if !exists {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		Infrastructure.JSONError(ctx, http.StatusUnauthorized, nil, "User not authenticated")
 		return
 	}
 
 	var req Domain.CreateSaleRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, err, "")
 		return
 	}
 
 	sale, err := c.salesUC.CreateSale(businessID, userID.(string), req)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, err, "")
 		return
 	}
 
@@ -81,7 +83,7 @@ func (c *SalesController) CreateSale(ctx *gin.Context) {
 func (c *SalesController) GetSales(ctx *gin.Context) {
 	businessID := ctx.Param("businessId")
 	if businessID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Business ID is required"})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, nil, "Business ID is required")
 		return
 	}
 
@@ -133,7 +135,7 @@ func (c *SalesController) GetSales(ctx *gin.Context) {
 
 	sales, err := c.salesUC.GetSales(businessID, filters)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusInternalServerError, err, "")
 		return
 	}
 
@@ -156,19 +158,19 @@ func (c *SalesController) GetSales(ctx *gin.Context) {
 func (c *SalesController) GetSale(ctx *gin.Context) {
 	businessID := ctx.Param("businessId")
 	if businessID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Business ID is required"})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, nil, "Business ID is required")
 		return
 	}
 
 	saleID := ctx.Param("saleId")
 	if saleID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Sale ID is required"})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, nil, "Sale ID is required")
 		return
 	}
 
 	sale, err := c.salesUC.GetSaleByID(saleID, businessID)
 	if err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusNotFound, err, "")
 		return
 	}
 
@@ -193,31 +195,31 @@ func (c *SalesController) GetSale(ctx *gin.Context) {
 func (c *SalesController) UpdateSale(ctx *gin.Context) {
 	businessID := ctx.Param("businessId")
 	if businessID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Business ID is required"})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, nil, "Business ID is required")
 		return
 	}
 
 	saleID := ctx.Param("saleId")
 	if saleID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Sale ID is required"})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, nil, "Sale ID is required")
 		return
 	}
 
 	userID, exists := ctx.Get("userID")
 	if !exists {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		Infrastructure.JSONError(ctx, http.StatusUnauthorized, nil, "User not authenticated")
 		return
 	}
 
 	var req Domain.CreateSaleRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, err, "")
 		return
 	}
 
 	sale, err := c.salesUC.UpdateSale(saleID, businessID, userID.(string), req)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, err, "")
 		return
 	}
 
@@ -240,24 +242,24 @@ func (c *SalesController) UpdateSale(ctx *gin.Context) {
 func (c *SalesController) VoidSale(ctx *gin.Context) {
 	businessID := ctx.Param("businessId")
 	if businessID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Business ID is required"})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, nil, "Business ID is required")
 		return
 	}
 
 	saleID := ctx.Param("saleId")
 	if saleID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Sale ID is required"})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, nil, "Sale ID is required")
 		return
 	}
 
 	userID, exists := ctx.Get("userID")
 	if !exists {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		Infrastructure.JSONError(ctx, http.StatusUnauthorized, nil, "User not authenticated")
 		return
 	}
 
 	if err := c.salesUC.VoidSale(saleID, businessID, userID.(string)); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, err, "")
 		return
 	}
 
@@ -279,7 +281,7 @@ func (c *SalesController) VoidSale(ctx *gin.Context) {
 func (c *SalesController) GetSalesSummary(ctx *gin.Context) {
 	businessID := ctx.Param("businessId")
 	if businessID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Business ID is required"})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, nil, "Business ID is required")
 		return
 	}
 
@@ -287,7 +289,7 @@ func (c *SalesController) GetSalesSummary(ctx *gin.Context) {
 
 	summary, err := c.salesUC.GetSalesSummary(businessID, period)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusInternalServerError, err, "")
 		return
 	}
 
@@ -309,7 +311,7 @@ func (c *SalesController) GetSalesSummary(ctx *gin.Context) {
 func (c *SalesController) GetSalesStats(ctx *gin.Context) {
 	businessID := ctx.Param("businessId")
 	if businessID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Business ID is required"})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, nil, "Business ID is required")
 		return
 	}
 
@@ -317,7 +319,7 @@ func (c *SalesController) GetSalesStats(ctx *gin.Context) {
 
 	stats, err := c.salesUC.GetSalesStats(businessID, period)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusInternalServerError, err, "")
 		return
 	}
 

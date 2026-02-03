@@ -5,7 +5,9 @@ import (
 	"strconv"
 
 	Domain "ShopOps/Domain"
+	Infrastructure "ShopOps/Infrastructure"
 	Usecases "ShopOps/Usecases"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -33,25 +35,25 @@ func NewInventoryController(inventoryUC Usecases.InventoryUseCase) *InventoryCon
 func (c *InventoryController) CreateProduct(ctx *gin.Context) {
 	businessID := ctx.Param("businessId")
 	if businessID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Business ID is required"})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, nil, "Business ID is required")
 		return
 	}
 
 	userID, exists := ctx.Get("userID")
 	if !exists {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		Infrastructure.JSONError(ctx, http.StatusUnauthorized, nil, "User not authenticated")
 		return
 	}
 
 	var req Domain.CreateProductRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, err, "")
 		return
 	}
 
 	product, err := c.inventoryUC.CreateProduct(businessID, userID.(string), req)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, err, "")
 		return
 	}
 
@@ -78,7 +80,7 @@ func (c *InventoryController) CreateProduct(ctx *gin.Context) {
 func (c *InventoryController) GetProducts(ctx *gin.Context) {
 	businessID := ctx.Param("businessId")
 	if businessID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Business ID is required"})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, nil, "Business ID is required")
 		return
 	}
 
@@ -124,7 +126,7 @@ func (c *InventoryController) GetProducts(ctx *gin.Context) {
 
 	products, err := c.inventoryUC.GetProducts(businessID, filters)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusInternalServerError, err, "")
 		return
 	}
 
@@ -147,19 +149,19 @@ func (c *InventoryController) GetProducts(ctx *gin.Context) {
 func (c *InventoryController) GetProduct(ctx *gin.Context) {
 	businessID := ctx.Param("businessId")
 	if businessID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Business ID is required"})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, nil, "Business ID is required")
 		return
 	}
 
 	productID := ctx.Param("productId")
 	if productID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Product ID is required"})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, nil, "Product ID is required")
 		return
 	}
 
 	product, err := c.inventoryUC.GetProductByID(productID, businessID)
 	if err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusNotFound, err, "")
 		return
 	}
 
@@ -184,31 +186,31 @@ func (c *InventoryController) GetProduct(ctx *gin.Context) {
 func (c *InventoryController) UpdateProduct(ctx *gin.Context) {
 	businessID := ctx.Param("businessId")
 	if businessID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Business ID is required"})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, nil, "Business ID is required")
 		return
 	}
 
 	productID := ctx.Param("productId")
 	if productID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Product ID is required"})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, nil, "Product ID is required")
 		return
 	}
 
 	userID, exists := ctx.Get("userID")
 	if !exists {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		Infrastructure.JSONError(ctx, http.StatusUnauthorized, nil, "User not authenticated")
 		return
 	}
 
 	var req Domain.CreateProductRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, err, "")
 		return
 	}
 
 	product, err := c.inventoryUC.UpdateProduct(productID, businessID, userID.(string), req)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, err, "")
 		return
 	}
 
@@ -231,24 +233,24 @@ func (c *InventoryController) UpdateProduct(ctx *gin.Context) {
 func (c *InventoryController) DeleteProduct(ctx *gin.Context) {
 	businessID := ctx.Param("businessId")
 	if businessID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Business ID is required"})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, nil, "Business ID is required")
 		return
 	}
 
 	productID := ctx.Param("productId")
 	if productID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Product ID is required"})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, nil, "Product ID is required")
 		return
 	}
 
 	userID, exists := ctx.Get("userID")
 	if !exists {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		Infrastructure.JSONError(ctx, http.StatusUnauthorized, nil, "User not authenticated")
 		return
 	}
 
 	if err := c.inventoryUC.DeleteProduct(productID, businessID, userID.(string)); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, err, "")
 		return
 	}
 
@@ -273,30 +275,30 @@ func (c *InventoryController) DeleteProduct(ctx *gin.Context) {
 func (c *InventoryController) AdjustStock(ctx *gin.Context) {
 	businessID := ctx.Param("businessId")
 	if businessID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Business ID is required"})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, nil, "Business ID is required")
 		return
 	}
 
 	productID := ctx.Param("productId")
 	if productID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Product ID is required"})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, nil, "Product ID is required")
 		return
 	}
 
 	userID, exists := ctx.Get("userID")
 	if !exists {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		Infrastructure.JSONError(ctx, http.StatusUnauthorized, nil, "User not authenticated")
 		return
 	}
 
 	var req Domain.AdjustStockRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, err, "")
 		return
 	}
 
 	if err := c.inventoryUC.AdjustStock(productID, businessID, userID.(string), req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, err, "")
 		return
 	}
 
@@ -318,7 +320,7 @@ func (c *InventoryController) AdjustStock(ctx *gin.Context) {
 func (c *InventoryController) GetLowStock(ctx *gin.Context) {
 	businessID := ctx.Param("businessId")
 	if businessID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Business ID is required"})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, nil, "Business ID is required")
 		return
 	}
 
@@ -331,7 +333,7 @@ func (c *InventoryController) GetLowStock(ctx *gin.Context) {
 
 	products, err := c.inventoryUC.GetLowStock(businessID, threshold)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusInternalServerError, err, "")
 		return
 	}
 
@@ -355,13 +357,13 @@ func (c *InventoryController) GetLowStock(ctx *gin.Context) {
 func (c *InventoryController) GetStockHistory(ctx *gin.Context) {
 	businessID := ctx.Param("businessId")
 	if businessID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Business ID is required"})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, nil, "Business ID is required")
 		return
 	}
 
 	productID := ctx.Param("productId")
 	if productID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Product ID is required"})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, nil, "Product ID is required")
 		return
 	}
 
@@ -374,7 +376,7 @@ func (c *InventoryController) GetStockHistory(ctx *gin.Context) {
 
 	history, err := c.inventoryUC.GetStockHistory(productID, businessID, limit)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusInternalServerError, err, "")
 		return
 	}
 

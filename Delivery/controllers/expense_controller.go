@@ -6,7 +6,9 @@ import (
 	"time"
 
 	Domain "ShopOps/Domain"
+	Infrastructure "ShopOps/Infrastructure"
 	Usecases "ShopOps/Usecases"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -35,25 +37,25 @@ func NewExpenseController(expenseUC Usecases.ExpenseUseCase) *ExpenseController 
 func (c *ExpenseController) CreateExpense(ctx *gin.Context) {
 	businessID := ctx.Param("businessId")
 	if businessID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Business ID is required"})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, nil, "Business ID is required")
 		return
 	}
 
 	userID, exists := ctx.Get("userID")
 	if !exists {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		Infrastructure.JSONError(ctx, http.StatusUnauthorized, nil, "User not authenticated")
 		return
 	}
 
 	var req Domain.CreateExpenseRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, err, "")
 		return
 	}
 
 	expense, err := c.expenseUC.CreateExpense(businessID, userID.(string), req)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, err, "")
 		return
 	}
 
@@ -80,7 +82,7 @@ func (c *ExpenseController) CreateExpense(ctx *gin.Context) {
 func (c *ExpenseController) GetExpenses(ctx *gin.Context) {
 	businessID := ctx.Param("businessId")
 	if businessID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Business ID is required"})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, nil, "Business ID is required")
 		return
 	}
 
@@ -127,7 +129,7 @@ func (c *ExpenseController) GetExpenses(ctx *gin.Context) {
 
 	expenses, err := c.expenseUC.GetExpenses(businessID, filters)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusInternalServerError, err, "")
 		return
 	}
 
@@ -150,19 +152,19 @@ func (c *ExpenseController) GetExpenses(ctx *gin.Context) {
 func (c *ExpenseController) GetExpense(ctx *gin.Context) {
 	businessID := ctx.Param("businessId")
 	if businessID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Business ID is required"})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, nil, "Business ID is required")
 		return
 	}
 
 	expenseID := ctx.Param("expenseId")
 	if expenseID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Expense ID is required"})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, nil, "Expense ID is required")
 		return
 	}
 
 	expense, err := c.expenseUC.GetExpenseByID(expenseID, businessID)
 	if err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusNotFound, err, "")
 		return
 	}
 
@@ -187,31 +189,31 @@ func (c *ExpenseController) GetExpense(ctx *gin.Context) {
 func (c *ExpenseController) UpdateExpense(ctx *gin.Context) {
 	businessID := ctx.Param("businessId")
 	if businessID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Business ID is required"})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, nil, "Business ID is required")
 		return
 	}
 
 	expenseID := ctx.Param("expenseId")
 	if expenseID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Expense ID is required"})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, nil, "Expense ID is required")
 		return
 	}
 
 	userID, exists := ctx.Get("userID")
 	if !exists {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		Infrastructure.JSONError(ctx, http.StatusUnauthorized, nil, "User not authenticated")
 		return
 	}
 
 	var req Domain.CreateExpenseRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, err, "")
 		return
 	}
 
 	expense, err := c.expenseUC.UpdateExpense(expenseID, businessID, userID.(string), req)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, err, "")
 		return
 	}
 
@@ -234,24 +236,24 @@ func (c *ExpenseController) UpdateExpense(ctx *gin.Context) {
 func (c *ExpenseController) VoidExpense(ctx *gin.Context) {
 	businessID := ctx.Param("businessId")
 	if businessID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Business ID is required"})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, nil, "Business ID is required")
 		return
 	}
 
 	expenseID := ctx.Param("expenseId")
 	if expenseID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Expense ID is required"})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, nil, "Expense ID is required")
 		return
 	}
 
 	userID, exists := ctx.Get("userID")
 	if !exists {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		Infrastructure.JSONError(ctx, http.StatusUnauthorized, nil, "User not authenticated")
 		return
 	}
 
 	if err := c.expenseUC.VoidExpense(expenseID, businessID, userID.(string)); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, err, "")
 		return
 	}
 
@@ -273,7 +275,7 @@ func (c *ExpenseController) VoidExpense(ctx *gin.Context) {
 func (c *ExpenseController) GetExpenseSummary(ctx *gin.Context) {
 	businessID := ctx.Param("businessId")
 	if businessID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Business ID is required"})
+		Infrastructure.JSONError(ctx, http.StatusBadRequest, nil, "Business ID is required")
 		return
 	}
 
@@ -281,7 +283,7 @@ func (c *ExpenseController) GetExpenseSummary(ctx *gin.Context) {
 
 	summary, err := c.expenseUC.GetExpenseSummary(businessID, period)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		Infrastructure.JSONError(ctx, http.StatusInternalServerError, err, "")
 		return
 	}
 
